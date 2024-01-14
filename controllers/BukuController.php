@@ -12,6 +12,7 @@ use app\models\ContactForm;
 use app\models\KatalogBuku;
 use app\models\SignUpForm;
 use yii\helpers\VarDumper;
+use yii\web\UploadedFile;
 
 class BukuController extends Controller
 {
@@ -25,12 +26,12 @@ class BukuController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['list-buku','create-update-buku'],
+                'only' => ['list-buku', 'create-update-buku'],
                 'rules' => [
                     [
-                        'actions' => ['list-buku','create-update-buku'],
+                        'actions' => ['list-buku', 'create-update-buku'],
                         'allow' => true,
-                        'roles' => ['@'],//l log-in user
+                        'roles' => ['@'], //l log-in user
                     ],
                 ],
             ],
@@ -67,7 +68,7 @@ class BukuController extends Controller
 
     public function actionListBuku()
     {
-    
+
         $model = KatalogBuku::find()->all();
         //diatas untuk menampilkan semua data yang ada dalam model katalog buku 
         //find()-> adalah metode yang disediakan oleh Yii2 ActiveRecord untuk membuat objek kueri untuk tabel buku.
@@ -98,6 +99,24 @@ class BukuController extends Controller
                     $model->created_by = Yii::$app->user->id;
                     $model->status = 1;
                 }
+                $webroot = Yii::getAlias('@webroot/data');
+                $model->profile_picture = UploadedFile::getInstance($model, 'profile_picture');
+                if ($model->profile_picture) {
+
+                    if (is_dir(Yii::$app->basePath . "/web/data")) {
+                        if (file_put_contents(Yii::getAlias('@webroot/data/') . $model->fix_picture,  file_get_contents($model->profile_picture->tempName)) !== false) {
+                            $model->profile_picture = $model->fix_picture;
+                        } else {
+                            Yii::error('Unable to save display picture');
+                            Yii::$app->session->setFlash('error', 'Unable to save display picture');
+                        }
+                    } else {
+                        Yii::error('Unable to save display picture. Does not have a data folder');
+                        Yii::$app->session->setFlash('error', 'Unable to save display picture. Does not have a data folder');
+                    }
+                } else {
+                    $model->profile_picture = $model->getOldAttribute('profile_picture');
+                }
                 if (!$model->save()) {
                     $model->validate();
                     //untuk menampilkan error di UI dengn setfLASH
@@ -108,7 +127,6 @@ class BukuController extends Controller
                     Yii::$app->session->setFlash('success', 'Buku berhasil di tambah / diubah');
                     //redirect ke halaman list buku jika berhasil
                     return $this->redirect(['buku/list-buku']);
-
                 }
             }
             return $this->render('create-update-buku', [
