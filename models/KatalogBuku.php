@@ -23,6 +23,7 @@ class KatalogBuku extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public $fix_picture = '';
     const TERSEDIA = 1;
     const DIPINJAM = 0;
     const TERSEDIA_TEXT = 'Tersedia';
@@ -45,6 +46,8 @@ class KatalogBuku extends \yii\db\ActiveRecord
             [['deskripsi_buku'], 'string'],
             [['judul_buku', 'penerbit'], 'string', 'max' => 255],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['profile_picture'], 'image',  'skipOnEmpty' => true, 'extensions' => 'png, jpg,jpeg'],
+            [['fix_picture'], 'string'],
         ];
     }
 
@@ -111,3 +114,4 @@ class KatalogBuku extends \yii\db\ActiveRecord
         return $this->hasMany(Pengembalian::class, ['id_buku' => 'id']);
     }
 }
+
