@@ -22,13 +22,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'id' => 'katalog-buku',
         'layout' => 'horizontal',
     ]); ?>
+    // cek jika title == 'Update Buku'
     <?php if ($title == 'Update Buku') : ?>
-        
         <?php if ($model->profile_picture) : ?>
             <?php
             $baseUrl = Url::base(true);
             $imageUrl = $baseUrl . '/data/' . $model->profile_picture;
             ?>
+    // view image 
             <img src="<?= Html::encode($imageUrl) ?>" alt="Uploaded Image" style="max-width: 200px;min-width:200px;">
         <?php endif; ?>
     <?php endif; ?>
