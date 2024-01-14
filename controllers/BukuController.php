@@ -100,21 +100,27 @@ class BukuController extends Controller
                     $model->status = 1;
                 }
                 $webroot = Yii::getAlias('@webroot/data');
+                // upload file
                 $model->profile_picture = UploadedFile::getInstance($model, 'profile_picture');
                 if ($model->profile_picture) {
-
+                    // cek apakah ada folder data
                     if (is_dir(Yii::$app->basePath . "/web/data")) {
+                        // put content dengan sesuai dengan webroot. file name dan diisi dengan content dari model->profile_picture ( File)
                         if (file_put_contents(Yii::getAlias('@webroot/data/') . $model->fix_picture,  file_get_contents($model->profile_picture->tempName)) !== false) {
+                            // Profile_picture diisi dengan fix_picture (filename) saja untuk disimpan ke database
                             $model->profile_picture = $model->fix_picture;
                         } else {
+                            // error jika save gagal
                             Yii::error('Unable to save display picture');
                             Yii::$app->session->setFlash('error', 'Unable to save display picture');
                         }
                     } else {
+                        //error jika tidak ada folder
                         Yii::error('Unable to save display picture. Does not have a data folder');
                         Yii::$app->session->setFlash('error', 'Unable to save display picture. Does not have a data folder');
                     }
                 } else {
+                    // jika tidak ada pergantian pada model->profile_picture pakai attribute lama 
                     $model->profile_picture = $model->getOldAttribute('profile_picture');
                 }
                 if (!$model->save()) {
