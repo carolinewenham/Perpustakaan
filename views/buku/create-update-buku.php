@@ -57,12 +57,18 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php ActiveForm::end(); ?>
 
     <script>
+        // function on change
         $('#katalogbuku-profile_picture').change(function() {
+        
             var fileInput = document.getElementById('katalogbuku-profile_picture');
+            // jika terdapat length berarti tidak di cancel
             if (fileInput.files.length > 0) {
+                // ambil filename
                 var filename = fileInput.files[0].name;
+                //dimasukan dalam value fix_picture
                 $('#katalogbuku-fix_picture').val(filename);
             } else {
+                // jika tidak ada value dikosongkan 
                 $('#katalogbuku-fix_picture').val('');
             }
         })
