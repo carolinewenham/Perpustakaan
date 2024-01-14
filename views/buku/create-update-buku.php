@@ -6,6 +6,7 @@
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
+use yii\helpers\Url;
 
 $this->title = $title;
 $this->params['breadcrumbs'][] = $this->title;
@@ -15,14 +16,24 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to create katalog buku</p>
+    <p>Please fill out the following fields to <?=$title?></p>
 
     <?php $form = ActiveForm::begin([
         'id' => 'katalog-buku',
         'layout' => 'horizontal',
     ]); ?>
+    <?php if ($title == 'Update Buku') : ?>
+        
+        <?php if ($model->profile_picture) : ?>
+            <?php
+            $baseUrl = Url::base(true);
+            $imageUrl = $baseUrl . '/data/' . $model->profile_picture;
+            ?>
+            <img src="<?= Html::encode($imageUrl) ?>" alt="Uploaded Image" style="max-width: 200px;min-width:200px;">
+        <?php endif; ?>
+    <?php endif; ?>
 
-    <div class="form-group">
+    <div class="form-group mt-2">
         <?= $form->field($model, 'judul_buku')->textInput(['autofocus' => true]) ?>
     </div>
     <div class="form-group">
@@ -31,7 +42,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="form-group">
         <?= $form->field($model, 'penerbit')->textInput(); ?>
     </div>
+    <div class="form-group">
+        <?= $form->field($model, 'profile_picture')->fileInput()->hint('Recommended size 400 x 400 pixels')->label('Cover') ?>
+    </div>
 
+    <div class="form-group">
+        <?= $form->field($model, 'fix_picture')->textInput(['type' => 'text',  "style" => "display:none"])->label(false) ?>
+    </div>
     <div class="form-group">
         <?= Html::submitButton('Submit', ['class' => 'btn btn-primary', 'name' => 'submit-buku']) ?>
     </div>
@@ -39,6 +56,16 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php ActiveForm::end(); ?>
 
     <script>
+        $('#katalogbuku-profile_picture').change(function() {
+            var fileInput = document.getElementById('katalogbuku-profile_picture');
+            if (fileInput.files.length > 0) {
+                var filename = fileInput.files[0].name;
+                $('#katalogbuku-fix_picture').val(filename);
+            } else {
+                $('#katalogbuku-fix_picture').val('');
+            }
+        })
+
         $('.dropdownSelect2').select2({
             minimumResultsForSearch: -1
         });
